@@ -13,7 +13,7 @@ humidity= 45; %Humidity percentage
 ambient_light= 300; %Ambient light in lx
 
 target_notes='Notes Here'; %Reflectivity or other notes here 
-itn=25; %Number of iterations of grabbing data from sensor 
+itn=5; %Number of iterations of grabbing data from sensor 
 
 %%
 
@@ -26,16 +26,24 @@ data_array = zeros(itn, colnum);
 
 sObject=serial('COM6','BaudRate',115200,'TimeOut',10,'Terminator','LF');
 
-
+%%
 get(sObject);
 fopen(sObject);
 
-fprintf(sObject,'Z')
-sObject.ValuesSent
+%%
+
+fprintf(sObject,'Z') %Sending a Z to test
+sObject.ValuesSent %Confirms data being sent 
+
+%%
+
+fprintf(sObject,'K') %Sending a Z to test
+sObject.ValuesSent %Confirms data being sent 
 
 
+%%
 
-
+fclose(sObject);
 
 %%
 
@@ -67,13 +75,15 @@ while(i<itn+1)
     i=i+1;
     
 end
-
+%fprintf(sObject,'K') %Sending a Z to test
+sObject.ValuesSent %Confirms data being sent
+fclose(sObject);
 
 end_tim=num2str(toc(T),8);
 avg_tim=num2str((toc(T)/itn),8);
 
 % Closes the serial port
-fclose(sObject);
+
 
 data_array;
 
