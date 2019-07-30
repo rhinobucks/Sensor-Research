@@ -150,7 +150,7 @@ int main(void)
 
 
 
-
+	uint8_t rx[1];
 	char str1[100]="1234567890";
 	//char str2[100]="1234567890";
 
@@ -235,17 +235,45 @@ int main(void)
   /* Infinite loop */
    /* USER CODE BEGIN WHILE */
 
+
+
   HAL_GPIO_WritePin(GPIOA, TRIG_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
    while (1)
    {
-     /* USER CODE END WHILE */
 
+	   HAL_UART_Receive( &huart2, rx, strlen( (char*)rx ),0xFFFF);
+
+
+	   if(*rx=='Z')
+	   {
+			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
+			HAL_Delay(100);
+			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
+
+	   }
+
+	   else if(*rx=='K')
+	   {
+
+			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
+			HAL_Delay(1000);
+			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
+
+	   }
+
+	   else
+	   {
+
+			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
+
+	   }
+
+
+	   /*
     //OPTICAL SENSOR: USER CODE BEGIN 3
  	    VL53L1_WaitMeasurementDataReady( Dev );
 
  	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
-
-
 
    	   //OPTICAL SENSOR: USER CODE END 3
 
@@ -272,8 +300,6 @@ int main(void)
 		  //sprintf((char*)buff, "%s\n\r", str2);
 
 
-
-
 		  HAL_UART_Transmit( &huart2, buff, strlen( (char*)buff ), 0xFFFF );
 		  VL53L1_ClearInterruptAndStartMeasurement( Dev );
 
@@ -287,9 +313,7 @@ int main(void)
 		 //ULTRASONIC SENSOR: USER CODE END 3
 
 
-
-
-
+*/
 
 
    }
