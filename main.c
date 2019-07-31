@@ -164,6 +164,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+  HAL_InitTick(1);
 
   /* USER CODE BEGIN Init */
 
@@ -241,7 +242,9 @@ int main(void)
    while (1)
    {
 
+	   __HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
 	   HAL_UART_Receive( &huart2, rx, strlen( (char*)rx ),0xFFFF);
+
 
 
 	   if(*rx=='Z')
@@ -249,6 +252,8 @@ int main(void)
 			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
 			HAL_Delay(100);
 			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
+
+
 
 	   }
 
@@ -258,62 +263,64 @@ int main(void)
 			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
 			HAL_Delay(1000);
 			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
-
 	   }
 
-	   else
+	   else if(*rx=='X')
 	   {
 
+			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
+			HAL_Delay(4000);
 			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
+
 
 	   }
 
 
-	   /*
-    //OPTICAL SENSOR: USER CODE BEGIN 3
- 	    VL53L1_WaitMeasurementDataReady( Dev );
 
- 	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
+	   //OPTICAL SENSOR: USER CODE BEGIN 3
+	  			 	    VL53L1_WaitMeasurementDataReady( Dev );
 
-   	   //OPTICAL SENSOR: USER CODE END 3
+	  			 	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
 
-
-
-	   //ULTRASONIC SENSOR: USER CODE BEGIN 3
-
-		  sensor_time = hcsr04_read();
-		  distance  = sensor_time * (.343/2); // meters per second * seconds
-		  k=distance;
+	  			   	   //OPTICAL SENSOR: USER CODE END 3
 
 
+
+	  				   //ULTRASONIC SENSOR: USER CODE BEGIN 3
+
+	  					  sensor_time = hcsr04_read();
+	  					  distance  = sensor_time * (.343/2); // meters per second * seconds
+	  					  k=distance;
 
 
 
 
-		  //sprintf( (char*)buff, "Ultron: %d, ToF: %d, Difference: %d \n\r", k, RangingData.RangeMilliMeter, diff ); //Printed labels
-
-		  //sprintf( (char*)buff, "%d, %d \n\r", k, RangingData.RangeMilliMeter);  //No printed labels
-		  sprintf(str1, "%.*f",8,distance);
-
-		  sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
-		 // sprintf(str2, "%d",OpCent.optical_centre);
-		  //sprintf((char*)buff, "%s\n\r", str2);
 
 
-		  HAL_UART_Transmit( &huart2, buff, strlen( (char*)buff ), 0xFFFF );
-		  VL53L1_ClearInterruptAndStartMeasurement( Dev );
+	  					  //sprintf( (char*)buff, "Ultron: %d, ToF: %d, Difference: %d \n\r", k, RangingData.RangeMilliMeter, diff ); //Printed labels
 
-		  //Ultrasonic sensor range, Optical sensor range
+	  					  //sprintf( (char*)buff, "%d, %d \n\r", k, RangingData.RangeMilliMeter);  //No printed labels
+	  					  sprintf(str1, "%.*f",8,distance);
 
-		  HAL_Delay(100);
-
-
-
-
-		 //ULTRASONIC SENSOR: USER CODE END 3
+	  					  sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
+	  					 // sprintf(str2, "%d",OpCent.optical_centre);
+	  					  //sprintf((char*)buff, "%s\n\r", str2);
 
 
-*/
+	  					  HAL_UART_Transmit( &huart2, buff, strlen( (char*)buff ), 0xFFFF );
+	  					  VL53L1_ClearInterruptAndStartMeasurement( Dev );
+
+	  					  //Ultrasonic sensor range, Optical sensor range
+
+	  					  __HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
+
+
+
+
+	  					 //ULTRASONIC SENSOR: USER CODE END 3
+
+
+
 
 
    }
