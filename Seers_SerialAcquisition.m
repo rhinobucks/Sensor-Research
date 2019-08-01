@@ -13,7 +13,7 @@ humidity= 45; %Humidity percentage
 ambient_light= 300; %Ambient light in lx
 
 target_notes='Notes Here'; %Reflectivity or other notes here 
-itn=5; %Number of iterations of grabbing data from sensor 
+itn=10; %Number of iterations of grabbing data from sensor (Min number is 10 or put a zero in front of it if it is a single number)
 
 %%
 
@@ -23,6 +23,7 @@ cur_tim=' ';
 
 data=' ';
 data_array = zeros(itn, colnum);
+TX='   ';
 
 sObject=serial('COM6','BaudRate',115200,'TimeOut',10,'Terminator','LF');
 
@@ -30,20 +31,31 @@ sObject=serial('COM6','BaudRate',115200,'TimeOut',10,'Terminator','LF');
 get(sObject);
 fopen(sObject);
 
-%%
+%% Z Scenario 
+
 
 fprintf(sObject,'Z') %Sending a Z to test
 sObject.ValuesSent %Confirms data being sent 
 
-%%
+%% K Scenario
 
 fprintf(sObject,'K') %Sending a Z to test
 sObject.ValuesSent %Confirms data being sent 
 
+%% BREAK LOOP
+
+fprintf(sObject,'X') %Sending a Z to test
+sObject.ValuesSent %Confirms data being sent 
+
+%% BREAK LOOP
+
+fprintf(sObject,' ') %Sending a Z to test
+sObject.ValuesSent %Confirms data being sent 
 
 %%
 
 fclose(sObject);
+fprintf("Port Closed!\n")
 
 %%
 
