@@ -147,7 +147,7 @@ int main(void)
 	VL53L1_Dev_t  vl53l1_c; // center module
 	VL53L1_DEV    Dev = &vl53l1_c;
 	VL53L1_CalibrationData_t OpCent;
-
+	VL53L1_UserRoi_t roiConfig;
 
 
 	uint8_t rx[1];
@@ -164,7 +164,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-  HAL_InitTick(1);
+  HAL_IncTick();
 
   /* USER CODE BEGIN Init */
 
@@ -228,6 +228,8 @@ int main(void)
   VL53L1_SetInterMeasurementPeriodMilliSeconds( Dev, 500 );  //default 500
   VL53L1_StartMeasurement( Dev );
 
+  //VL53L1_SetUserROI();
+
   VL53L1_GetCalibrationData(Dev, &OpCent); //Calibration data
 
 
@@ -243,37 +245,32 @@ int main(void)
    {
 
 	   __HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
-	   HAL_UART_Receive( &huart2, rx, strlen( (char*)rx ),0xFFFF);
+	   //HAL_UART_Receive( &huart2, rx, strlen( (char*)rx ),0x1000); //Blocking mode
+	   HAL_UART_Receive_IT( &huart2, rx, strlen( (char*)rx )); //Non-blocking mode
 
 
 
-	   if(*rx=='Z')
+	   if(*rx=='A') //Default state 16 x 16
 	   {
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
-			HAL_Delay(100);
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
+		   VL53L1_StopMeasurement( Dev );
+		   roiConfig.TopLeftX = 0;
+		   roiConfig.TopLeftY = 15;
+		   roiConfig.BotRightX = 15;
+		   roiConfig.BotRightY = 0;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+		   VL53L1_StartMeasurement( Dev );
+
+	   }
+
+	   else if(*rx=='B')
+	   {
+
 
 
 
 	   }
 
-	   else if(*rx=='K')
-	   {
 
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
-			HAL_Delay(1000);
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
-	   }
-
-	   else if(*rx=='X')
-	   {
-
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
-			HAL_Delay(4000);
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
-
-
-	   }
 
 
 
