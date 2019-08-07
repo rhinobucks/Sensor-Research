@@ -123,14 +123,6 @@ float hcsr04_read (void)
 }
 
 
-
-
-
-
-
-
-
-
 /* USER CODE END 0 */
 
 /**
@@ -140,6 +132,20 @@ float hcsr04_read (void)
 
 
 uint8_t rx[15];
+char str2[15]="XXXXXXXXXX";
+int test=0;
+
+int TLx=0;
+int TLy=0;
+int BRx=0;
+int BRy=0;
+int itn=0;
+
+char temp_TLx[3]= "00\0";
+char temp_TLy[3]= "00\0";
+char temp_BRx[3]= "00\0";
+char temp_BRy[3]= "00\0";
+char temp_itn[5]= "0000\0";
 
 
 int main(void)
@@ -153,14 +159,19 @@ int main(void)
 	VL53L1_DEV    Dev = &vl53l1_c;
 	VL53L1_CalibrationData_t OpCent;
 
-
-
-
 	char str1[100]="1234567890";
-	uint8_t str2[15]="Z76543210";
+
+///////////////////////
 
 
 
+int i=0;
+int j=0;
+int k=0;
+
+
+
+///////////////////////
 
   /* USER CODE END 1 */
 
@@ -212,7 +223,7 @@ int main(void)
   buff[0] = 0x13; // GPSR + 1 ( GPIO set pin state register)
   HAL_I2C_Master_Transmit( &hi2c1, EXPANDER_1_ADDR, buff, 2, 0xFFFF );
 
-  HAL_Delay( 2 ); // 2ms reset time
+  HAL_Delay(2); // 2ms reset time
 
   // set XSHUT (enable center module) -> expander 1, GPIO_15
   buff[0] = 0x13; // GPSR + 1 ( GPIO set pin state)
@@ -222,7 +233,7 @@ int main(void)
   buff[0] = 0x13; // GPSR + 1 ( GPIO set pin state register)
   HAL_I2C_Master_Transmit( &hi2c1, EXPANDER_1_ADDR, buff, 2, 0xFFFF );
 
-  HAL_Delay( 2 );
+  HAL_Delay(2);
 
   /*** VL53L1X Initialization ***/
   VL53L1_WaitDeviceBooted( Dev );
@@ -231,30 +242,107 @@ int main(void)
   VL53L1_SetDistanceMode( Dev, VL53L1_DISTANCEMODE_LONG ); //default long
   VL53L1_SetMeasurementTimingBudgetMicroSeconds( Dev, 50000 ); //default 50000
   VL53L1_SetInterMeasurementPeriodMilliSeconds( Dev, 500 );  //default 500
-  VL53L1_StartMeasurement( Dev );
+  VL53L1_StartMeasurement(Dev);
 
   VL53L1_GetCalibrationData(Dev, &OpCent); //Calibration data
 
 
   /* USER CODE END 2 */
 
+
+
   /* Infinite loop */
    /* USER CODE BEGIN WHILE */
+
  HAL_GPIO_WritePin(GPIOA, TRIG_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
- //HAL_UART_Receive_IT(&huart2, rx, 15);
-
-
-
 
    while (1)
    {
 
 	   HAL_UART_Receive( &huart2, rx, 15,1000);
-	   HAL_GPIO_TogglePin(GPIOA, LD2_Pin);
-	   HAL_Delay(500);
+
+	   sprintf(str2,(char*)rx);
+
+		   k=0;
+		   for (j=1; j<3; j++)
+		   {
+			   temp_TLx[k]=str2[j];
+			   k++;
+		   }
+
+		   TLx=atoi(temp_TLx);
+
+		   k=0;
+
+		   for (j=3; j<5; j++)
+		   {
+			   temp_TLy[k]=str2[j];
+			   k++;
+		   }
+
+		   TLy=atoi(temp_TLy);
+
+		   k=0;
+
+		   for (j=5; j<7; j++)
+		   {
+			   temp_BRx[k]=str2[j];
+			   k++;
+		   }
+
+		   BRx=atoi(temp_BRx);
+
+		   k=0;
+
+		   for (j=7; j<9; j++)
+		   {
+			   temp_BRy[k]=str2[j];
+			   k++;
+		   }
+
+		   BRy=atoi(temp_BRy);
+
+		   k=0;
+
+		   for (j=9; j<13; j++)
+		   {
+			   temp_itn[k]=str2[j];
+			   k++;
+		   }
+
+		   itn=atoi(temp_itn);
 
 
 
+
+
+	   if(str2[0]=='Z')
+	  	   {
+
+	  			//HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
+	  			//HAL_Delay(100);
+	  			//HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
+	  			HAL_GPIO_TogglePin(GPIOA, LD2_Pin);
+	  			HAL_Delay(500);
+
+
+	  	   }
+
+
+
+
+
+
+	   /*{
+		   VL53L1_StopMeasurement( Dev );
+		   roiConfig.TopLeftX = 0;
+		   roiConfig.TopLeftY = 15;
+		   roiConfig.BotRightX = 15;
+		   roiConfig.BotRightY = 0;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+		   VL53L1_StartMeasurement( Dev );
+
+	   }*/
 
 /*
 
