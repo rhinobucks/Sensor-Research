@@ -69,6 +69,7 @@ static void MX_I2C3_Init(void);
 static void MX_USART2_UART_Init(void);
 void Error_Handler(void);
 float hcsr04_read (void);
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 /* USER CODE BEGIN PFP */
 
@@ -105,7 +106,7 @@ float hcsr04_read (void)
 	HAL_GPIO_WritePin(GPIOA, TRIG_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
 
 	// read the time for which the pin is high
-	//DWT_Delay_us(2); //wait for 10 us
+	//DWT_Delay_us(2); //wait for  us
 	while (!(HAL_GPIO_ReadPin(GPIOA, ECHO_Pin)))// wait for the ECHO pin to go high
 	{
 		//HAL_GPIO_WritePin(GPIOA, LD2_Pin,GPIO_PIN_RESET);
@@ -127,6 +128,9 @@ float hcsr04_read (void)
 
 
 
+
+
+
 /* USER CODE END 0 */
 
 /**
@@ -135,12 +139,13 @@ float hcsr04_read (void)
   */
 
 
-
+uint8_t rx[15];
 
 
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
 
 	uint8_t buff[100];
 	VL53L1_RangingMeasurementData_t RangingData;
@@ -150,9 +155,9 @@ int main(void)
 
 
 
-	uint8_t rx[1];
+
 	char str1[100]="1234567890";
-	//char str2[100]="1234567890";
+	uint8_t str2[15]="Z76543210";
 
 
 
@@ -235,51 +240,23 @@ int main(void)
 
   /* Infinite loop */
    /* USER CODE BEGIN WHILE */
+ HAL_GPIO_WritePin(GPIOA, TRIG_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
+ //HAL_UART_Receive_IT(&huart2, rx, 15);
 
 
 
-  HAL_GPIO_WritePin(GPIOA, TRIG_Pin, GPIO_PIN_RESET);  // pull the TRIG pin low
+
    while (1)
    {
 
-	   //__HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
-	   HAL_UART_Receive( &huart2, rx, strlen( (char*)rx ),0x0001);
-	   //HAL_UART_Receive_IT( &huart2, rx, strlen( (char*)rx ));
-
-	   {
+	   HAL_UART_Receive( &huart2, rx, 15,1000);
+	   HAL_GPIO_TogglePin(GPIOA, LD2_Pin);
+	   HAL_Delay(500);
 
 
 
-	   if(*rx=='Z')
-	   {
-		  // __HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
-			//HAL_Delay(100);
-			//HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
 
-
-
-	   }
-
-	   else if(*rx=='K')
-	   {
-		   //__HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
-			HAL_Delay(1000);
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
-	   }
-
-	   else if(*rx=='X')
-	   {
-		   //__HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
-			//HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
-			//HAL_Delay(4000);
-			HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
-
-
-	   }
-
-
+/*
 
 	   //OPTICAL SENSOR: USER CODE BEGIN 3
 	  			 	    VL53L1_WaitMeasurementDataReady( Dev );
@@ -297,13 +274,6 @@ int main(void)
 	  					  k=distance;
 
 
-
-
-
-
-	  					  //sprintf( (char*)buff, "Ultron: %d, ToF: %d, Difference: %d \n\r", k, RangingData.RangeMilliMeter, diff ); //Printed labels
-
-	  					  //sprintf( (char*)buff, "%d, %d \n\r", k, RangingData.RangeMilliMeter);  //No printed labels
 	  					  sprintf(str1, "%.*f",8,distance);
 
 	  					  sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
@@ -322,18 +292,29 @@ int main(void)
 
 
 	  					 //ULTRASONIC SENSOR: USER CODE END 3
-
 	  					HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
 	  					HAL_Delay(1000);
 	  					HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
 
+*/
 
-	   }
+
+
    }
 
 
 
 
+
+}
+
+
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+
+	HAL_UART_Receive_IT( &huart2, rx, 15 );
 
 }
 
@@ -348,26 +329,6 @@ void SystemClock_Config(void)
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   // Initializes the CPU, AHB and APB busses clocks
-  /*
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 288;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
-
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 216;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV6;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
-  */
-
 
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
