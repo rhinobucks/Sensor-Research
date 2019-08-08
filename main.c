@@ -139,7 +139,7 @@ int TLx=0;
 int TLy=0;
 int BRx=0;
 int BRy=0;
-int itn=0;
+int itn=0; //Default to 0 iterations
 
 char temp_TLx[3]= "00\0";
 char temp_TLy[3]= "00\0";
@@ -147,6 +147,11 @@ char temp_BRx[3]= "00\0";
 char temp_BRy[3]= "00\0";
 char temp_itn[5]= "0000\0";
 
+uint8_t a=0;
+uint8_t b=15;
+uint8_t c=15;
+uint8_t d=0;
+int l=0;
 
 int main(void)
 {
@@ -158,6 +163,7 @@ int main(void)
 	VL53L1_Dev_t  vl53l1_c; // center module
 	VL53L1_DEV    Dev = &vl53l1_c;
 	VL53L1_CalibrationData_t OpCent;
+	VL53L1_UserRoi_t roiConfig;
 
 	char str1[100]="1234567890";
 
@@ -165,9 +171,11 @@ int main(void)
 
 
 
-int i=0;
+//int i=0;
 int j=0;
 int k=0;
+
+int start=0;
 
 
 
@@ -183,7 +191,6 @@ int k=0;
   //HAL_InitTick(10);
 
   /* USER CODE BEGIN Init */
-
    DWT_Delay_Init();
   /* USER CODE END Init */
 
@@ -259,7 +266,26 @@ int k=0;
    while (1)
    {
 
-	   HAL_UART_Receive( &huart2, rx, 15,1000);
+			   str2[0]='Z';
+			   str2[1]=0;
+			   str2[2]=0;
+			   str2[3]=0;
+			   str2[4]=0;
+			   str2[5]=0;
+			   str2[6]=0;
+			   str2[7]=0;
+			   str2[8]=0;
+			   str2[9]=0;
+			   str2[10]=0;
+			   str2[11]=0;
+			   str2[12]=0;
+
+
+
+
+
+
+	   HAL_UART_Receive(&huart2, rx, 15, 2500);
 
 	   sprintf(str2,(char*)rx);
 
@@ -313,9 +339,6 @@ int k=0;
 		   itn=atoi(temp_itn);
 
 
-
-
-
 	   if(str2[0]=='Z')
 	  	   {
 
@@ -324,67 +347,110 @@ int k=0;
 	  			//HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
 	  			HAL_GPIO_TogglePin(GPIOA, LD2_Pin);
 	  			HAL_Delay(500);
-
+	  			start=0;
 
 	  	   }
 
+	   else if(str2[0]=='A') //Default Case
+	  	   {
 
-
-
-
-
-	   /*{
-		   VL53L1_StopMeasurement( Dev );
+		   VL53L1_StopMeasurement(Dev);
 		   roiConfig.TopLeftX = 0;
 		   roiConfig.TopLeftY = 15;
 		   roiConfig.BotRightX = 15;
 		   roiConfig.BotRightY = 0;
 		   VL53L1_SetUserROI(Dev, &roiConfig);
-		   VL53L1_StartMeasurement( Dev );
-
-	   }*/
-
-/*
-
-	   //OPTICAL SENSOR: USER CODE BEGIN 3
-	  			 	    VL53L1_WaitMeasurementDataReady( Dev );
-
-	  			 	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
-
-	  			   	   //OPTICAL SENSOR: USER CODE END 3
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG); //default long
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 50000); //default 50000
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 500);  //default 500
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
 
 
+	  	   }
 
-	  				   //ULTRASONIC SENSOR: USER CODE BEGIN 3
+	   else if(str2[0]=='B') //Case to change Array Settings (with Normal Settings)
+	  	   {
 
-	  					  sensor_time = hcsr04_read();
-	  					  distance  = sensor_time * (.343/2); // meters per second * seconds
-	  					  k=distance;
+		   VL53L1_StopMeasurement(Dev);
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
 
 
-	  					  sprintf(str1, "%.*f",8,distance);
 
-	  					  sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
-	  					 // sprintf(str2, "%d",OpCent.optical_centre);
-	  					  //sprintf((char*)buff, "%s\n\r", str2);
-
-
-	  					  HAL_UART_Transmit( &huart2, buff, strlen( (char*)buff ), 0xFFFF );
-	  					  VL53L1_ClearInterruptAndStartMeasurement( Dev );
-
-	  					  //Ultrasonic sensor range, Optical sensor range
-
-	  					  //__HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
+if(start==1)
+{
+	   while(1)
+	   {
 
 
 
 
-	  					 //ULTRASONIC SENSOR: USER CODE END 3
-	  					HAL_GPIO_WritePin(GPIOA, LD2_Pin, 1);
-	  					HAL_Delay(1000);
-	  					HAL_GPIO_WritePin(GPIOA, LD2_Pin, 0);
 
-*/
+
+
+
+		   	   //OPTICAL SENSOR: USER CODE BEGIN 3
+		   	  			 	    VL53L1_WaitMeasurementDataReady( Dev );
+
+		   	  			 	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
+
+		   	  			   	   //OPTICAL SENSOR: USER CODE END 3
+
+		   	  				   //ULTRASONIC SENSOR: USER CODE BEGIN 3
+
+		   	  					  sensor_time = hcsr04_read();
+		   	  					  distance  = sensor_time * (.343/2); // meters per second * seconds
+		   	  					  k=distance;
+
+
+		   	  					  sprintf(str1, "%.*f",8,distance);
+
+		   	  					  sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
+		   	  					 // sprintf(str2, "%d",OpCent.optical_centre);
+		   	  					  //sprintf((char*)buff, "%s\n\r", str2);
+
+
+		   	  					  HAL_UART_Transmit( &huart2, buff, strlen((char*)buff ), 0xFFFF);
+		   	  					  VL53L1_ClearInterruptAndStartMeasurement(Dev);
+
+		   	  					  //Ultrasonic sensor range, Optical sensor range
+
+
+		   	  					 //ULTRASONIC SENSOR: USER CODE END 3
+
+
+
+
+		   	  					l++;
+
+
+		   	  			   if(l==itn)
+		   	  			   {
+
+		   	  				   start=0;
+
+
+
+		   	  				   l=0;
+
+		   	  				   break;
+
+		   	  			   }
+
+
+
+
+	   }
+
+}
 
 
 
