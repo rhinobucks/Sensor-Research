@@ -13,7 +13,71 @@ humidity= 45; %Humidity percentage
 ambient_light= 300; %Ambient light in lx
 
 target_notes='Notes Here'; %Reflectivity or other notes here 
-itn=10; %Number of iterations of grabbing data from sensor (Min number is 10 or put a zero in front of it if it is a single number)
+
+%%%%%%%%% Setting Entry %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+itn=17; %Number of iterations of grabbing data from sensor 
+
+TLx=0; %Default 0
+TLy=15; %Default 15
+BRx=15; %Default 15
+BRy=0; %Default 0
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Sets proper format of string to be sent to the microcontroller
+
+if TLx>=0 &&  TLx<=9
+ ch_TLx=strcat('0',int2str(TLx)); 
+ 
+else
+    ch_TLx=int2str(TLx);
+    
+end
+
+if TLy>=0 &&  TLy<=9
+ ch_TLy=strcat('0',int2str(TLy)); 
+ 
+else
+    ch_TLy=int2str(TLy);
+      
+end
+
+if BRx>=0 &&  BRx<=9
+ ch_BRx=strcat('0',int2str(BRx)); 
+   
+else
+    ch_BRx=int2str(BRx);
+    
+end
+
+if BRy>=0 &&  BRy<=9
+ ch_BRy=strcat('0',int2str(BRy)); 
+
+else
+    ch_BRy=int2str(BRy);
+       
+end
+
+if itn>=0 &&  itn<=9
+ ch_itn=strcat('0','0','0',int2str(itn)); 
+
+elseif itn>=10 &&  itn<=99
+    ch_itn=strcat('0','0',int2str(itn)); 
+        
+elseif itn>=100 &&  itn<=999
+     ch_itn=strcat('0',int2str(itn)); 
+     
+else
+    ch_itn=int2str(itn); 
+       
+end
+
+
+
+set1=strcat('B',ch_TLx,ch_TLy,ch_BRx,ch_BRy, ch_itn);
+
 
 %%
 
@@ -23,41 +87,17 @@ cur_tim=' ';
 
 data=' ';
 data_array = zeros(itn, colnum);
-TX='   ';
 
 sObject=serial('COM6','BaudRate',115200,'TimeOut',10,'Terminator','LF');
 
-%%
+
 get(sObject);
 fopen(sObject);
 
-%% Z Scenario 
-
-
-fprintf(sObject,'Z') %Sending a Z to test
+fprintf(sObject,set1); %Sending a Z to test
 sObject.ValuesSent %Confirms data being sent 
 
-%% K Scenario
-
-fprintf(sObject,'K') %Sending a Z to test
-sObject.ValuesSent %Confirms data being sent 
-
-%% BREAK LOOP
-
-fprintf(sObject,'X') %Sending a Z to test
-sObject.ValuesSent %Confirms data being sent 
-
-%% BREAK LOOP
-
-fprintf(sObject,' ') %Sending a Z to test
-sObject.ValuesSent %Confirms data being sent 
-
-%%
-
-fclose(sObject);
-fprintf("Port Closed!\n")
-
-%%
+%
 
 prev_t=0;
 new_t=0;
@@ -87,9 +127,10 @@ while(i<itn+1)
     i=i+1;
     
 end
-%fprintf(sObject,'K') %Sending a Z to test
-sObject.ValuesSent %Confirms data being sent
+
 fclose(sObject);
+fprintf('Port Closed!\n'); 
+
 
 end_tim=num2str(toc(T),8);
 avg_tim=num2str((toc(T)/itn),8);
@@ -163,7 +204,6 @@ dlmwrite('SensorData.txt',space2,'delimiter',' ','newline', 'pc','-append')
 
 %Confimation of data acquisition:
 fprintf("Acquisition Complete\n")
-
 
 
 
