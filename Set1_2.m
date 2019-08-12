@@ -36,7 +36,7 @@ set_char7='B';
 space1=[' ',' '];
 space2=[' ',' ';' ',' '];
 colnum=10; 
-
+column_titles={'Ultrasonic Sensor Range (mm)' 'Optical Sensor Range (mm)' };
 
 % Sets proper format of string to be sent to the microcontroller
 
@@ -170,6 +170,8 @@ avg_tim=num2str((toc(T)/itn),8);
 data_array;
 D1=[data_array itn_matrix];
 
+pause(3);
+
 
 %% Iteration 2 %%%%%%%%%%%%%
 
@@ -250,7 +252,7 @@ avg_tim=num2str((toc(T)/itn),8);
 data_array;
 D2=[data_array itn_matrix];
 
-
+pause(3);
 
 %% Iteration 3 %%%%%%%%%%%%%
 
@@ -331,6 +333,7 @@ avg_tim=num2str((toc(T)/itn),8);
 data_array;
 D3=[data_array itn_matrix];
 
+pause(3);
 
 %% Iteration 4 %%%%%%%%%%%%%
 
@@ -411,6 +414,7 @@ avg_tim=num2str((toc(T)/itn),8);
 data_array;
 D4=[data_array itn_matrix];
 
+pause(3);
 
 
 %% Iteration 5 %%%%%%%%%%%%%
@@ -493,6 +497,7 @@ avg_tim=num2str((toc(T)/itn),8);
 data_array;
 D5=[data_array itn_matrix];
 
+pause(3);
 
 %% Iteration 6 %%%%%%%%%%%%%
 
@@ -574,6 +579,7 @@ avg_tim=num2str((toc(T)/itn),8);
 data_array;
 D6=[data_array itn_matrix];
 
+pause(3);
 
 %% Iteration 7 %%%%%%%%%%%%%
 
@@ -655,16 +661,7 @@ avg_tim=num2str((toc(T)/itn),8);
 data_array;
 D7=[data_array itn_matrix];
 
-
-
-
-
-
-
-
-
-
-
+pause(3);
 
 
 %% Header Printing Portion: Text File Header Setup
@@ -738,6 +735,7 @@ dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 dlmwrite('SensorData.txt',D6,'delimiter',',','newline', 'pc','-append')
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 dlmwrite('SensorData.txt',D7,'delimiter',',','newline', 'pc','-append')
+dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
 
