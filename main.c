@@ -152,6 +152,8 @@ uint8_t b=15;
 uint8_t c=15;
 uint8_t d=0;
 int l=0;
+int phase=0;
+
 
 int main(void)
 {
@@ -246,9 +248,11 @@ int start=0;
   VL53L1_WaitDeviceBooted( Dev );
   VL53L1_DataInit( Dev );
   VL53L1_StaticInit( Dev );
+
   VL53L1_SetDistanceMode( Dev, VL53L1_DISTANCEMODE_LONG ); //default long
   VL53L1_SetMeasurementTimingBudgetMicroSeconds( Dev, 50000 ); //default 50000
   VL53L1_SetInterMeasurementPeriodMilliSeconds( Dev, 500 );  //default 500
+
   VL53L1_StartMeasurement(Dev);
 
   VL53L1_GetCalibrationData(Dev, &OpCent); //Calibration data
@@ -279,10 +283,6 @@ int start=0;
 			   str2[10]=0;
 			   str2[11]=0;
 			   str2[12]=0;
-
-
-
-
 
 
 	   HAL_UART_Receive(&huart2, rx, 15, 2500);
@@ -360,16 +360,18 @@ int start=0;
 		   roiConfig.BotRightX = 15;
 		   roiConfig.BotRightY = 0;
 		   VL53L1_SetUserROI(Dev, &roiConfig);
+
 		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG); //default long
 		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 50000); //default 50000
 		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 500);  //default 500
+
 		   VL53L1_StartMeasurement(Dev);
 		   start=1;
 
 
 	  	   }
 
-	   else if(str2[0]=='B') //Case to change Array Settings (with Normal Settings)
+	   else if(str2[0]=='B') //Case to change Array Settings (with Default Settings)
 	  	   {
 
 		   VL53L1_StopMeasurement(Dev);
@@ -378,6 +380,145 @@ int start=0;
 		   roiConfig.BotRightX = BRx;
 		   roiConfig.BotRightY = BRy;
 		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG); //default long
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 50000); //default 50000
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 500);  //default 500
+
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
+
+	   else if(str2[0]=='C') //Case to 20 --> Short
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_SHORT);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 20000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 25);
+
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
+
+	   else if(str2[0]=='D') //Case to 33 --> Short
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_SHORT);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 33000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 38);
+
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
+
+	   else if(str2[0]=='E') //Case to 33 --> Medium
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_MEDIUM);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 33000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 38);
+
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
+
+	   else if(str2[0]=='F') //Case to 33 --> Long
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 33000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 38);
+
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
+
+	   else if(str2[0]=='G') //Case to 140 --> Short
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_SHORT);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 140000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 150);
+
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
+
+	   else if(str2[0]=='H') //Case to 140 --> Medium
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_MEDIUM);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 140000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 150);
+
+		   VL53L1_StartMeasurement(Dev);
+		   start=1;
+
+	  	   }
+
+	   else if(str2[0]=='K') //Case to 140 --> Long
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 140000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 150);
+
 		   VL53L1_StartMeasurement(Dev);
 		   start=1;
 
@@ -385,16 +526,49 @@ int start=0;
 
 
 
+	   else if(str2[0]=='J') //Case to change Array Settings to Set 3 (Scanning ROI)
+	  	   {
+
+		   VL53L1_StopMeasurement(Dev);
+
+		   TLx=0;
+		   TLy=15;
+		   BRx=15;
+		   BRy=0;
+		   phase=1;
+
+
+		   roiConfig.TopLeftX = TLx;
+		   roiConfig.TopLeftY = TLy;
+		   roiConfig.BotRightX = BRx;
+		   roiConfig.BotRightY = BRy;
+		   VL53L1_SetUserROI(Dev, &roiConfig);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_SHORT);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 20000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 25);
+
+		   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_MEDIUM);
+		   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 33000);
+		   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 38);
+
+		   VL53L1_StartMeasurement(Dev);
+
+
+	  	   }
+
+
+
+
+
+
+
+
+
 if(start==1)
 {
 	   while(1)
 	   {
-
-
-
-
-
-
 
 
 		   	   //OPTICAL SENSOR: USER CODE BEGIN 3
@@ -431,8 +605,8 @@ if(start==1)
 
 		   	  					l++;
 
-
-		   	  			   if(l==itn)
+//*
+		   	  			   if(l==itn) //Comment out if there is no desire to break the data collection loop after settings have been changed
 		   	  			   {
 
 		   	  				   start=0;
@@ -446,7 +620,7 @@ if(start==1)
 		   	  			   }
 
 
-
+//*/
 
 	   }
 
