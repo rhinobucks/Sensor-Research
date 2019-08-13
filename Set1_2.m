@@ -12,23 +12,23 @@ temperature= 74; %Degrees i n Farenheit
 humidity= 45; %Humidity percentage
 ambient_light= 300; %Ambient light in lx
 
-target_notes='Notes Here'; %Reflectivity or other notes here 
+target_notes='Target Reflectivity: White (88%)'; %Reflectivity or other notes here 
 
 %%%%%%%%% Setting Entry %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-itn=14; %Number of iterations of grabbing data from sensor 
+itn=50; %Number of iterations of grabbing data from sensor 
 
 TLx=0; %Default 0
 TLy=15; %Default 15
 BRx=15; %Default 15
 BRy=0; %Default 0
 
-set_char1='B';
-set_char2='B';
-set_char3='B';
-set_char4='B';
-set_char5='B';
-set_char6='B';
-set_char7='B';
+set_char1='C';
+set_char2='D';
+set_char3='E';
+set_char4='F';
+set_char5='G';
+set_char6='H';
+set_char7='K';
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,7 +36,9 @@ set_char7='B';
 space1=[' ',' '];
 space2=[' ',' ';' ',' '];
 colnum=10; 
-column_titles={'Ultrasonic Sensor Range (mm)' 'Optical Sensor Range (mm)' };
+column_titles={'Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), ' };
+total_time=0; 
+delay=2.5; %Time delay between iterations to give microcontroller time to iterate
 
 % Sets proper format of string to be sent to the microcontroller
 
@@ -164,13 +166,14 @@ fprintf('Port Closed!\n');
 
 
 
-end_tim=num2str(toc(T),8);
-avg_tim=num2str((toc(T)/itn),8);
+end_tim=toc(T);
+total_time=total_time+end_tim; 
+
 
 data_array;
 D1=[data_array itn_matrix];
 
-pause(3);
+pause(delay);
 
 
 %% Iteration 2 %%%%%%%%%%%%%
@@ -246,13 +249,14 @@ fprintf('Port Closed!\n');
 
 
 
-end_tim=num2str(toc(T),8);
-avg_tim=num2str((toc(T)/itn),8);
+end_tim=toc(T);
+total_time=total_time+end_tim; 
+
 
 data_array;
 D2=[data_array itn_matrix];
 
-pause(3);
+pause(delay);
 
 %% Iteration 3 %%%%%%%%%%%%%
 
@@ -327,13 +331,13 @@ fprintf('Port Closed!\n');
 
 
 
-end_tim=num2str(toc(T),8);
-avg_tim=num2str((toc(T)/itn),8);
+end_tim=toc(T);
+total_time=total_time+end_tim; 
 
 data_array;
 D3=[data_array itn_matrix];
 
-pause(3);
+pause(delay);
 
 %% Iteration 4 %%%%%%%%%%%%%
 
@@ -408,13 +412,14 @@ fprintf('Port Closed!\n');
 
 
 
-end_tim=num2str(toc(T),8);
-avg_tim=num2str((toc(T)/itn),8);
+end_tim=toc(T);
+total_time=total_time+end_tim; 
+
 
 data_array;
 D4=[data_array itn_matrix];
 
-pause(3);
+pause(delay);
 
 
 %% Iteration 5 %%%%%%%%%%%%%
@@ -491,13 +496,14 @@ fprintf('Port Closed!\n');
 
 
 
-end_tim=num2str(toc(T),8);
-avg_tim=num2str((toc(T)/itn),8);
+end_tim=toc(T);
+total_time=total_time+end_tim; 
+
 
 data_array;
 D5=[data_array itn_matrix];
 
-pause(3);
+pause(delay);
 
 %% Iteration 6 %%%%%%%%%%%%%
 
@@ -573,13 +579,14 @@ fprintf('Port Closed!\n');
 
 
 
-end_tim=num2str(toc(T),8);
-avg_tim=num2str((toc(T)/itn),8);
+end_tim=toc(T);
+total_time=total_time+end_tim; 
+
 
 data_array;
 D6=[data_array itn_matrix];
 
-pause(3);
+pause(delay);
 
 %% Iteration 7 %%%%%%%%%%%%%
 
@@ -655,13 +662,14 @@ fprintf('Port Closed!\n');
 
 
 
-end_tim=num2str(toc(T),8);
-avg_tim=num2str((toc(T)/itn),8);
+end_tim=toc(T);
+total_time=total_time+end_tim; 
+
 
 data_array;
 D7=[data_array itn_matrix];
 
-pause(3);
+%pause(delay);
 
 
 %% Header Printing Portion: Text File Header Setup
@@ -700,17 +708,22 @@ fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
 file_data = fopen('SensorData.txt','a');
-fprintf(file_data, 'Average Time Elapsed: %s sec', avg_tim);
+fprintf(file_data, 'Average Time Elapsed: %s sec', num2str((total_time)/(itn*7)));
 fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
 file_data = fopen('SensorData.txt','a');
-fprintf(file_data, 'Number of Samples Taken: %d samples', itn);
+fprintf(file_data, 'Number of Samples Taken each Iteration: %d', itn);
 fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
 file_data = fopen('SensorData.txt','a');
-fprintf(file_data, 'Total Time Elapsed: %s sec', end_tim);
+fprintf(file_data, 'Number of Samples Taken Total: %d samples',itn*7);
+fclose(file_data);
+dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
+
+file_data = fopen('SensorData.txt','a');
+fprintf(file_data, 'Total Time Elapsed: %s sec', num2str(total_time));
 fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
