@@ -15,7 +15,7 @@ ambient_light= 300; %Ambient light in lx
 target_notes='Target Reflectivity: White (88%)'; %Reflectivity or other notes here 
 
 %%%%%%%%% Setting Entry %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-itn=50; %Number of iterations of grabbing data from sensor 
+itn=5; %Number of iterations of grabbing data from sensor 
 
 TLx=0; %Default 0
 TLy=15; %Default 15
@@ -36,7 +36,7 @@ set_char7='K';
 space1=[' ',' '];
 space2=[' ',' ';' ',' '];
 colnum=10; 
-column_titles={'Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), ' };
+column_titles='Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), Range Status, Signal Rate Return Mega cps, Ambient Rate Return Mega cps, Stream Count, Effective SPAD Return Count, Sigma mm, Time for Iteration, Setting Number';
 total_time=0; 
 delay=2.5; %Time delay between iterations to give microcontroller time to iterate
 
@@ -735,6 +735,12 @@ fclose(file_data);
 
 %% Data Printing Section:
 dlmwrite('SensorData.txt',space2,'delimiter',' ','newline', 'pc','-append')
+
+file_data = fopen('SensorData.txt','a');
+fprintf(file_data, '%s',column_titles);
+fclose(file_data);
+
+dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 dlmwrite('SensorData.txt',D1,'delimiter',',','newline', 'pc','-append')
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 dlmwrite('SensorData.txt',D2,'delimiter',',','newline', 'pc','-append')

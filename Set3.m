@@ -5,8 +5,8 @@ format long g
 
 %% User Input Block: (move to the top of the file after completion)
 
-test_name='Initial Program Test 1';
-target_size='2.4384m x 2.4384m';
+test_name='Set 3: Variable ROI Test';
+target_size='0.085m x 0.085m';
 distance=1; %Distance to target in meters
 temperature= 74; %Degrees i n Farenheit 
 humidity= 45; %Humidity percentage
@@ -30,7 +30,7 @@ set_char1='J';
 space1=[' ',' '];
 space2=[' ',' ';' ',' '];
 colnum=10; 
-column_titles={'Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), ' };
+column_titles='Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), Range Status, Signal Rate Return Mega cps, Ambient Rate Return Mega cps, Stream Count, Effective SPAD Return Count, Sigma mm, Time for Iteration, Setting Number, Grid Location';
 total_time=0; 
 delay=2.5; %Time delay between iterations to give microcontroller time to iterate
 
@@ -83,27 +83,71 @@ else
 end
 
 
+%% Setting Identifier Setup 
+
+
+itn_num=1; %20 --> Short
 
 
 
-
-%% Iteration 1 %%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%
-itn_num=1;
-
-
-%%%%%%%%%%%%%%%%
 i=1; 
-itn_matrix=zeros(itn,1); 
+set_mat1=zeros((itn*52),1); 
 
-while(i<((itn*52)*2)+1)
+while(i<((itn*52))+1)
     
-    itn_matrix(i,1)=itn_num; 
+   set_mat1(i,1)=itn_num; 
     i=i+1;
    
 end
 
+
+itn_num=2; %33 --> Medium
+
+
+
+i=1; 
+set_mat2=zeros((itn*52),1); 
+
+while(i<((itn*52))+1)
+    
+   set_mat2(i,1)=itn_num; 
+    i=i+1;
+   
+end
+
+set_mat=[set_mat1; set_mat2]; 
+
+
+
+%% Grid Identifier Setup 
+
+i=1;
+j=1;
+
+itn_matrix=zeros(itn,1); 
+grid_mat=zeros((itn*52),1); 
+G=[];
+
+while(i<53)
+    
+ 
+    for j=1:itn
+        
+       itn_matrix(j,1)=i;
+       
+
+        
+    end
+
+    G=[G; itn_matrix]; 
+    i=i+1;
+ 
+   
+end
+
+G_mat=[G; G]; 
+
+%% Iteration  %%%%%%%%%%%%%
 
 set1=strcat(set_char1,ch_TLx,ch_TLy,ch_BRx,ch_BRy, ch_itn);
 i=1;
@@ -165,7 +209,7 @@ total_time=total_time+end_tim;
 
 
 data_array;
-D1=[data_array itn_matrix];
+D1=[data_array set_mat G_mat];
 
 
 pause(delay);
@@ -235,10 +279,15 @@ fclose(file_data);
 
 %% Data Printing Section:
 dlmwrite('SensorData.txt',space2,'delimiter',' ','newline', 'pc','-append')
+
+file_data = fopen('SensorData.txt','a');
+fprintf(file_data, '%s',column_titles);
+fclose(file_data);
+
+dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 dlmwrite('SensorData.txt',D1,'delimiter',',','newline', 'pc','-append')
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
-
 
 
 %Confimation of data acquisition:
