@@ -3,6 +3,8 @@ close all
 clc
 format long g
 
+%pause(60) % Time for me to get out of the way
+
 %% User Input Block: (move to the top of the file after completion)
 
 test_name='Set 3: Variable ROI Test';
@@ -15,7 +17,7 @@ ambient_light= 300; %Ambient light in lx
 target_notes='Target Reflectivity: White (88%)'; %Reflectivity or other notes here 
 
 %%%%%%%%% Setting Entry %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-itn=1; %Number of iterations of grabbing data from sensor 
+itn=2; %Number of iterations of grabbing data from sensor 
 
 TLx=0; %Default 0
 TLy=15; %Default 15
@@ -30,7 +32,7 @@ set_char1='J';
 space1=[' ',' '];
 space2=[' ',' ';' ',' '];
 colnum=10; 
-column_titles='Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), Range Status, Signal Rate Return Mega cps, Ambient Rate Return Mega cps, Stream Count, Effective SPAD Return Count, Sigma mm, Time for Iteration, Setting Number, Grid Location';
+column_titles='Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), Range Status, Signal Rate Return Mega cps, Ambient Rate Return Mega cps, Stream Count, Effective SPAD Return Count, Sigma mm, Time for Iteration, Setting Number, Block Location, Grid Location';
 total_time=0; 
 delay=2.5; %Time delay between iterations to give microcontroller time to iterate
 
@@ -91,9 +93,9 @@ itn_num=1; %20 --> Short
 
 
 i=1; 
-set_mat1=zeros((itn*52),1); 
+set_mat1=zeros((itn*169),1); 
 
-while(i<((itn*52))+1)
+while(i<((itn*169))+1)
     
    set_mat1(i,1)=itn_num; 
     i=i+1;
@@ -106,9 +108,9 @@ itn_num=2; %33 --> Medium
 
 
 i=1; 
-set_mat2=zeros((itn*52),1); 
+set_mat2=zeros((itn*169),1); 
 
-while(i<((itn*52))+1)
+while(i<((itn*169))+1)
     
    set_mat2(i,1)=itn_num; 
     i=i+1;
@@ -125,10 +127,10 @@ i=1;
 j=1;
 
 itn_matrix=zeros(itn,1); 
-grid_mat=zeros((itn*52),1); 
+grid_mat=zeros((itn*169),1); 
 G=[];
 
-while(i<53)
+while(i<170)
     
  
     for j=1:itn
@@ -146,6 +148,35 @@ while(i<53)
 end
 
 G_mat=[G; G]; 
+
+
+%% Block Identifier Setup 
+
+i=1;
+j=1;
+
+itn_matrix=zeros(itn,1); 
+grid_mat=zeros((itn*169),1); 
+B=[];
+
+while(i<14)
+    
+ 
+    for j=1:itn*13
+        
+       itn_matrix(j,1)=i;
+       
+
+        
+    end
+
+    B=[B; itn_matrix]; 
+    i=i+1;
+ 
+   
+end
+
+b_mat=[B; B]; 
 
 %% Iteration  %%%%%%%%%%%%%
 
@@ -173,7 +204,7 @@ tim=zeros(1,itn);
 T=tic; %stopwatch starts 
 
 
-while(i<((itn*52)*2)+1)
+while(i<((itn*169)*2)+1)
     
     fprintf(sObject,'*IDN?');
     scan = fscanf(sObject);
@@ -209,7 +240,7 @@ total_time=total_time+end_tim;
 
 
 data_array;
-D1=[data_array set_mat G_mat];
+D1=[data_array set_mat b_mat G_mat];
 
 
 pause(delay);
@@ -252,7 +283,7 @@ fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
 file_data = fopen('SensorData.txt','a');
-fprintf(file_data, 'Average Time Elapsed: %s sec', num2str((total_time)/(itn*7)));
+fprintf(file_data, 'Average Time Elapsed: %s sec', num2str((total_time)/(itn*169)));
 fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
@@ -262,7 +293,7 @@ fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
 file_data = fopen('SensorData.txt','a');
-fprintf(file_data, 'Number of Samples Taken Total: %d samples',itn*7);
+fprintf(file_data, 'Number of Samples Taken Total: %d samples',itn*169);
 fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
