@@ -156,6 +156,7 @@ int phase=1;
 int total_itn=0;
 int count=0;
 int grid=1;
+int block=1;
 
 int main(void)
 {
@@ -540,6 +541,7 @@ int start=0;
 		   k=0;
 		   count=0;
 		   grid=1;
+		   block=1;
 
 		   TLx=0;
 		   TLy=3;
@@ -573,87 +575,86 @@ int start=0;
 			   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 25);
 			   VL53L1_StartMeasurement(Dev);
 
+
+  				TLx=0;
+  				TLy=3;
+  				BRx=3;
+  				BRy=0;
+
 			   grid=1;
+			   block=1;
 
 
 		   	   while(phase==1)
 		   	   {
 
-		   		   if (grid==1)
+		   		   ////////////////////////////////////////
+
+
+
+
+/*
+		   		   if (block==1) //Block 1
 		   			{
-		   				TLx=0;
-		   				TLy=3;
-		   				BRx=3;
-		   				BRy=0;
-
-		   			}
-
-		   		   else if (grid>1 && grid<14)
-				   {
-
+			   		   if (grid==1)
+			   			{
+				   		   TLx=0;
+				   	   	   TLy=3;
+				   	   	   BRx=3;
+				   	   	   BRy=0;
+			   			}
+			   		   else if (grid>1 && grid<14)
+			   			{
 			   		   TLx=TLx+1;
 			   	   	   TLy=3;
 			   	   	   BRx=BRx+1;
 			   	   	   BRy=0;
+			   			}
+		   			}
 
-				   }
-
-				   else if (grid==14)
-				   {
-					   TLx=0;
-					   TLy=7;
-					   BRx=3;
-					   BRy=4;
-
-				   }
-
-				   else if (grid>14 && grid<27)
-				   {
-
+		   		   else if (block==2) //Block 2
+		   			{
+			   		   if (grid==1)
+			   			{
+				   		   TLx=0;
+				   	   	   TLy=4;
+				   	   	   BRx=3;
+				   	   	   BRy=1;
+			   			}
+			   		   else if (grid>1 && grid<14)
+			   			{
 			   		   TLx=TLx+1;
-			   	   	   TLy=7;
+			   	   	   TLy=4;
 			   	   	   BRx=BRx+1;
-			   	   	   BRy=4;
+			   	   	   BRy=1;
+			   			}
+		   			}
 
-				   }
+*/
 
-				   else if (grid==27)
-				   {
-					   TLx=0;
-					   TLy=11;
-					   BRx=3;
-					   BRy=8;
 
-				   }
 
-				   else if (grid>27 && grid<40)
-				   {
 
-			   		   TLx=TLx+1;
-			   	   	   TLy=11;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=8;
+		   		   if (grid==1 && block<14)
+		   			{
+			   		   TLx=0;
+			   	   	   TLy=block+2;
+			   	   	   BRx=3;
+			   	   	   BRy=block-1;
+		   			}
 
-				   }
+		   		   else if (grid>1 && grid<14 && block<14)
+		   			{
+		   		   TLx=TLx+1;
+		   	   	   TLy=block+2;
+		   	   	   BRx=BRx+1;
+		   	   	   BRy=block-1;
+		   			}
 
-				   else if (grid==40)
-				   {
-					   TLx=0;
-					   TLy=15;
-					   BRx=3;
-					   BRy=12;
 
-				   }
 
-				   else if (grid>40 && grid<53)
-				   {
 
-			   		   TLx=TLx+1;
-			   	   	   TLy=15;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=12;
-
-				   }
+		   		   /////////////////////////////////////////////
 
 				   else
 				   {
@@ -680,7 +681,6 @@ int start=0;
 			   	  			 	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
 			   	  					sensor_time = hcsr04_read();
 			   	  					distance  = sensor_time * (.343/2); // meters per second * seconds
-			   	  					//k=distance;
 			   	  					sprintf(str1, "%.*f",8,distance);
 			   	  					sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
 			   	  					HAL_UART_Transmit( &huart2, buff, strlen((char*)buff ), 0xFFFF);
@@ -691,11 +691,23 @@ int start=0;
 			   	  					count++;
 
 
-			   	  			   if(k==itn) //Comment out if there is no desire to break the data collection loop after settings have been changed
+			   	  			   if(k==itn && grid!=13) //Comment out if there is no desire to break the data collection loop after settings have been changed
 			   	  			   {
 			   	  				   k=0;
 			   	  				   grid++;
+
+
 			   	  				   break;
+			   	  			   }
+
+			   	  			   else if(k==itn && grid==13)
+			   	  			   {
+			   	  				   k=0;
+			   	  				   grid=1;
+			   	  				   block++;
+
+			   	  				   break;
+
 			   	  			   }
 
 
@@ -716,95 +728,43 @@ int start=0;
 			   VL53L1_StopMeasurement(Dev);
 			   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_MEDIUM);
 			   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 33000);
-			   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 38);
+			   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 39);
 			   VL53L1_StartMeasurement(Dev);
 
-			   grid=1;
+ 				TLx=0;
+ 				TLy=3;
+ 				BRx=3;
+ 				BRy=0;
 
+			   grid=1;
+			   block=1;
+
+
+			   ////////////////////////
 
 		   	   while(phase==2)
 		   	   {
 
 
 
-		   		if (grid==1)
+		   		   if (grid==1 && block<14)
 		   			{
-		   				TLx=0;
-		   				TLy=3;
-		   				BRx=3;
-		   				BRy=0;
-
+			   		   TLx=0;
+			   	   	   TLy=block+2;
+			   	   	   BRx=3;
+			   	   	   BRy=block-1;
 		   			}
 
-		   	   else if (grid>1 && grid<14)
-				   {
-
-			   		   TLx=TLx+1;
-			   	   	   TLy=3;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=0;
-
-				   }
-
-				   else if (grid==14)
-				   {
-					   TLx=0;
-					   TLy=7;
-					   BRx=3;
-					   BRy=4;
+		   		   else if (grid>1 && grid<14 && block<14)
+		   			{
+		   		   TLx=TLx+1;
+		   	   	   TLy=block+2;
+		   	   	   BRx=BRx+1;
+		   	   	   BRy=block-1;
+		   			}
 
 
-				   }
-
-				   else if (grid>14 && grid<27)
-				   {
-
-			   		   TLx=TLx+1;
-			   	   	   TLy=7;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=4;
-
-				   }
-
-				   else if (grid==27)
-				   {
-					   TLx=0;
-					   TLy=11;
-					   BRx=3;
-					   BRy=8;
-
-				   }
-
-				   else if (grid>27 && grid<40)
-				   {
-
-
-			   		   TLx=TLx+1;
-			   	   	   TLy=11;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=8;
-
-				   }
-
-				   else if (grid==40)
-				   {
-					   TLx=0;
-					   TLy=15;
-					   BRx=3;
-					   BRy=12;
-
-
-				   }
-
-				   else if (grid>40 && grid<53)
-				   {
-
-			   		   TLx=TLx+1;
-			   	   	   TLy=15;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=12;
-
-				   }
+		   		///////////////////////////////////////////////////////////////////////
 
 				   else
 				   {
@@ -823,7 +783,7 @@ int start=0;
 		   	   	   VL53L1_SetUserROI(Dev, &roiConfig);
 		   	   	   VL53L1_StartMeasurement(Dev);
 
-		   	   	   while(1) //Iteration loop
+		   	   	   while(1) //500 Iteration loop
 		   	   	   {
 
 
@@ -831,7 +791,6 @@ int start=0;
 			   	  			 	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
 			   	  					sensor_time = hcsr04_read();
 			   	  					distance  = sensor_time * (.343/2); // meters per second * seconds
-			   	  					//k=distance;
 			   	  					sprintf(str1, "%.*f",8,distance);
 			   	  					sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
 			   	  					HAL_UART_Transmit( &huart2, buff, strlen((char*)buff ), 0xFFFF);
@@ -842,11 +801,23 @@ int start=0;
 			   	  					count++;
 
 
-			   	  			   if(k==itn) //Comment out if there is no desire to break the data collection loop after settings have been changed
+			   	  			   if(k==itn && grid!=13) //Comment out if there is no desire to break the data collection loop after settings have been changed
 			   	  			   {
 			   	  				   k=0;
 			   	  				   grid++;
+
+
 			   	  				   break;
+			   	  			   }
+
+			   	  			   else if(k==itn && grid==13)
+			   	  			   {
+			   	  				   k=0;
+			   	  				   grid=1;
+			   	  				   block++;
+
+			   	  				   break;
+
 			   	  			   }
 
 
