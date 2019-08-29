@@ -8,16 +8,16 @@ format long g
 %% User Input Block: (move to the top of the file after completion)
 
 test_name='Set 3: Variable ROI Test';
-target_size='0.085m x 0.085m';
+target_size='0.135m x 0.13m';
 distance=1; %Distance to target in meters
-temperature= 74; %Degrees i n Farenheit 
-humidity= 45; %Humidity percentage
-ambient_light= 300; %Ambient light in lx
+temperature= 79; %Degrees i n Farenheit 
+humidity= 49; %Humidity percentage
+ambient_light= 654; %Ambient light in lx
 
 target_notes='Target Reflectivity: White (88%)'; %Reflectivity or other notes here 
 
 %%%%%%%%% Setting Entry %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-itn=2; %Number of iterations of grabbing data from sensor 
+itn=1; %Number of iterations of grabbing data from sensor 
 
 TLx=0; %Default 0
 TLy=15; %Default 15
@@ -35,6 +35,7 @@ colnum=10;
 column_titles='Ultrasonic Sensor Range (mm), Optical Sensor Range (mm), Range Status, Signal Rate Return Mega cps, Ambient Rate Return Mega cps, Stream Count, Effective SPAD Return Count, Sigma mm, Time for Iteration, Setting Number, Block Location, Grid Location';
 total_time=0; 
 delay=2.5; %Time delay between iterations to give microcontroller time to iterate
+types=3; %Number of test scans being done: short, medium, long 
 
 % Sets proper format of string to be sent to the microcontroller
 
@@ -117,7 +118,20 @@ while(i<((itn*169))+1)
    
 end
 
-set_mat=[set_mat1; set_mat2]; 
+
+itn_num=3; %33 --> Long
+
+i=1; 
+set_mat3=zeros((itn*169),1); 
+
+while(i<((itn*169))+1)
+    
+   set_mat3(i,1)=itn_num; 
+    i=i+1;
+   
+end
+
+set_mat=[set_mat1; set_mat2; set_mat3]; 
 
 
 
@@ -147,7 +161,7 @@ while(i<170)
    
 end
 
-G_mat=[G; G]; 
+G_mat=[G; G; G]; 
 
 
 %% Block Identifier Setup 
@@ -176,7 +190,7 @@ while(i<14)
    
 end
 
-b_mat=[B; B]; 
+b_mat=[B; B; B]; 
 
 %% Iteration  %%%%%%%%%%%%%
 
@@ -204,7 +218,7 @@ tim=zeros(1,itn);
 T=tic; %stopwatch starts 
 
 
-while(i<((itn*169)*2)+1)
+while(i<((itn*169)*types)+1)
     
     fprintf(sObject,'*IDN?');
     scan = fscanf(sObject);
@@ -228,7 +242,7 @@ while(i<((itn*169)*2)+1)
     
 end
 
-
+%%
 
 fclose(sObject);
 fprintf('Port Closed!\n'); 
@@ -293,7 +307,7 @@ fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
 file_data = fopen('SensorData.txt','a');
-fprintf(file_data, 'Number of Samples Taken Total: %d samples',itn*169);
+fprintf(file_data, 'Number of Samples Taken Total: %d samples',itn*169*types);
 fclose(file_data);
 dlmwrite('SensorData.txt',space1,'delimiter',' ','newline', 'pc','-append')
 
