@@ -788,7 +788,7 @@ int start=0;
 
 
 
-		   if(phase==3) //PHASE 2 BEGIN
+		   if(phase==3) //PHASE 3 BEGIN
 		   {
 
 			   // Phase 1 //////////////////////
