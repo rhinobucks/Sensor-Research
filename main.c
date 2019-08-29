@@ -672,9 +672,9 @@ int start=0;
 
 
 
-		   	   } // PHASE 1 END
+		   	   } // PHASE 1 WHILE END
 
-		   }
+		   } // PHASE 1 END
 
 
 
@@ -793,9 +793,9 @@ int start=0;
 
 			   // Phase 1 //////////////////////
 			   VL53L1_StopMeasurement(Dev);
-			   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_SHORT);
-			   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 20000);
-			   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 25);
+			   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_LONG);
+			   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 33000);
+			   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 39);
 			   VL53L1_StartMeasurement(Dev);
 
 
@@ -901,7 +901,7 @@ int start=0;
 
 
 
-		   else
+		   else if(phase==4)
 		   {
 
 			   break;
