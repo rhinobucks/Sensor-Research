@@ -592,49 +592,6 @@ int start=0;
 
 
 
-
-/*
-		   		   if (block==1) //Block 1
-		   			{
-			   		   if (grid==1)
-			   			{
-				   		   TLx=0;
-				   	   	   TLy=3;
-				   	   	   BRx=3;
-				   	   	   BRy=0;
-			   			}
-			   		   else if (grid>1 && grid<14)
-			   			{
-			   		   TLx=TLx+1;
-			   	   	   TLy=3;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=0;
-			   			}
-		   			}
-
-		   		   else if (block==2) //Block 2
-		   			{
-			   		   if (grid==1)
-			   			{
-				   		   TLx=0;
-				   	   	   TLy=4;
-				   	   	   BRx=3;
-				   	   	   BRy=1;
-			   			}
-			   		   else if (grid>1 && grid<14)
-			   			{
-			   		   TLx=TLx+1;
-			   	   	   TLy=4;
-			   	   	   BRx=BRx+1;
-			   	   	   BRy=1;
-			   			}
-		   			}
-
-*/
-
-
-
-
 		   		   if (grid==1 && block<14)
 		   			{
 			   		   TLx=0;
@@ -831,26 +788,128 @@ int start=0;
 
 
 
+		   if(phase==3) //PHASE 2 BEGIN
+		   {
+
+			   // Phase 1 //////////////////////
+			   VL53L1_StopMeasurement(Dev);
+			   VL53L1_SetDistanceMode(Dev, VL53L1_DISTANCEMODE_SHORT);
+			   VL53L1_SetMeasurementTimingBudgetMicroSeconds(Dev, 20000);
+			   VL53L1_SetInterMeasurementPeriodMilliSeconds(Dev, 25);
+			   VL53L1_StartMeasurement(Dev);
+
+
+  				TLx=0;
+  				TLy=3;
+  				BRx=3;
+  				BRy=0;
+
+			   grid=1;
+			   block=1;
+
+
+		   	   while(phase==3)
+		   	   {
+
+		   		   ////////////////////////////////////////
+
+
+
+		   		   if (grid==1 && block<14)
+		   			{
+			   		   TLx=0;
+			   	   	   TLy=block+2;
+			   	   	   BRx=3;
+			   	   	   BRy=block-1;
+		   			}
+
+		   		   else if (grid>1 && grid<14 && block<14)
+		   			{
+		   		   TLx=TLx+1;
+		   	   	   TLy=block+2;
+		   	   	   BRx=BRx+1;
+		   	   	   BRy=block-1;
+		   			}
+
+
+
+
+		   		   /////////////////////////////////////////////
+
+				   else
+				   {
+
+					   phase=4;
+					   break;
+
+				   }
+
+
+		   	   	   VL53L1_StopMeasurement(Dev);
+		   	   	   roiConfig.TopLeftX = TLx;
+		   	   	   roiConfig.TopLeftY = TLy;
+		   	   	   roiConfig.BotRightX = BRx;
+		   	   	   roiConfig.BotRightY = BRy;
+		   	   	   VL53L1_SetUserROI(Dev, &roiConfig);
+		   	   	   VL53L1_StartMeasurement(Dev);
+
+		   	   	   while(1) //500 Iteration loop
+		   	   	   {
+
+
+			   	  			 	    VL53L1_WaitMeasurementDataReady( Dev );
+			   	  			 	    VL53L1_GetRangingMeasurementData( Dev, &RangingData );
+			   	  					sensor_time = hcsr04_read();
+			   	  					distance  = sensor_time * (.343/2); // meters per second * seconds
+			   	  					sprintf(str1, "%.*f",8,distance);
+			   	  					sprintf( (char*)buff, "%.8s, %d, %d, %.4f, %.4f, %d, %d, %f  \n\r",str1,RangingData.RangeMilliMeter,RangingData.RangeStatus,( RangingData.SignalRateRtnMegaCps / 65536.0 ),(RangingData.AmbientRateRtnMegaCps / 65336.0 ),(RangingData.StreamCount),(RangingData.EffectiveSpadRtnCount / 256),( RangingData.SigmaMilliMeter / 65536.0 ));  //No printed labels
+			   	  					HAL_UART_Transmit( &huart2, buff, strlen((char*)buff ), 0xFFFF);
+			   	  					VL53L1_ClearInterruptAndStartMeasurement(Dev);
+
+
+			   	  					k++;
+			   	  					count++;
+
+
+			   	  			   if(k==itn && grid!=13) //Comment out if there is no desire to break the data collection loop after settings have been changed
+			   	  			   {
+			   	  				   k=0;
+			   	  				   grid++;
+
+
+			   	  				   break;
+			   	  			   }
+
+			   	  			   else if(k==itn && grid==13)
+			   	  			   {
+			   	  				   k=0;
+			   	  				   grid=1;
+			   	  				   block++;
+
+			   	  				   break;
+
+			   	  			   }
+
+
+		   	   	   }
+
+
+
+		   	   }
+
+		   } // PHASE 3 END
 
 
 
 		   else
 		   {
 
-
-
 			   break;
 
 		   }
 
 
-
-
-
-
-
 	  	   } //J Statement WHILE END
-
 
 
 	  	   } //J Statement END
